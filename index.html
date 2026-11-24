@@ -1,0 +1,1244 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+ content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>iClone Music</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+  --body-color: #c8c8cc;
+  --wheel-color: #fafafa;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: #111;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px 12px;
+}
+
+button, input, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app {
+  width: min(100%, 360px);
+}
+
+.ipod {
+  background: var(--body-color);
+  border-radius: 30px;
+  padding: 19px;
+  box-shadow:
+    inset 0 2px 5px #ffffff88,
+    inset 0 -3px 6px #00000030,
+    0 15px 40px #0008;
+}
+
+.screen-frame {
+  background: #202020;
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.screen {
+  background: #fff;
+  color: #151515;
+  border-radius: 4px;
+  height: 300px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.status {
+  background: linear-gradient(#fff, #c4ced7);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-weight: bold;
+  border-bottom: 1px solid #aaa;
+}
+
+.battery {
+  width: 22px;
+  height: 10px;
+  border: 1px solid #555;
+  border-radius: 2px;
+  padding: 1px;
+}
+
+.battery::after {
+  content: "";
+  display: block;
+  height: 100%;
+  width: 90%;
+  background: #52b64d;
+}
+
+#content {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.menu-row {
+  width: 100%;
+  padding: 11px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 0;
+  background: white;
+  color: #111;
+  text-align: left;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.menu-row.active {
+  background: linear-gradient(#62baff, #167bd8);
+  color: white;
+}
+
+.wheel {
+  width: 82%;
+  aspect-ratio: 1;
+  margin: 25px auto 12px;
+  background: var(--wheel-color);
+  border-radius: 50%;
+  position: relative;
+  box-shadow: 0 1px 5px #0002;
+  touch-action: none;
+  user-select: none;
+}
+
+.wheel button {
+  position: absolute;
+  background: transparent;
+  border: none;
+  color: #777;
+  font-weight: bold;
+  padding: 0;
+}
+
+.menu-button {
+  top: 5%;
+  left: 32%;
+  width: 36%;
+  height: 18%;
+  font-size: 13px;
+}
+
+.previous-button {
+  left: 1%;
+  top: 37%;
+  width: 25%;
+  height: 26%;
+  font-size: 23px;
+}
+
+.next-button {
+  right: 1%;
+  top: 37%;
+  width: 25%;
+  height: 26%;
+  font-size: 23px;
+}
+
+.play-button {
+  bottom: 3%;
+  left: 32%;
+  width: 36%;
+  height: 22%;
+  font-size: 20px;
+}
+
+.wheel .center-button {
+  top: 32%;
+  left: 32%;
+  width: 36%;
+  height: 36%;
+  border-radius: 50%;
+  background: var(--body-color);
+  border: 1px solid #0002;
+  box-shadow: inset 0 1px 3px #fff5;
+}
+
+.panel {
+  padding: 13px;
+  font-size: 13px;
+}
+
+.panel h3 {
+  margin: 0 0 12px;
+}
+
+.panel input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  color: #222;
+  background: white;
+  font-size: 16px;
+}
+
+.primary {
+  width: 100%;
+  background: #1684e4;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.secondary {
+  width: 100%;
+  padding: 9px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  background: #eee;
+  color: #222;
+  margin-bottom: 8px;
+}
+
+.hint {
+  color: #666;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.song-title {
+  font-weight: bold;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.progress {
+  width: 100%;
+  accent-color: #258be0;
+  margin: 8px 0 0;
+}
+
+.time-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #666;
+}
+
+.playback-info {
+  padding: 7px 10px;
+}
+
+.player-host {
+  display: none;
+  background: #000;
+}
+
+.player-host.visible {
+  display: block;
+}
+
+#player {
+  display: block;
+  width: 100%;
+  height: 200px;
+  border: 0;
+}
+
+.brand {
+  text-align: center;
+  color: #888;
+  font-size: 11px;
+  letter-spacing: 1px;
+  margin-top: 18px;
+}
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.swatch {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 1px solid #0002;
+  border-radius: 10px;
+}
+
+.notice {
+  padding: 8px;
+  background: #f1f1f1;
+  color: #444;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+@media (max-height: 650px) {
+  body { align-items: flex-start; }
+}
+</style>
+</head>
+
+<body>
+
+<main class="app">
+  <div class="ipod">
+    <div class="screen-frame">
+      <div class="screen">
+        <div class="status">
+          <span id="headerTitle">iClone Music</span>
+          <span id="playIcon"></span>
+          <span class="battery"></span>
+        </div>
+
+        <div id="content"></div>
+
+        <div id="playerHost" class="player-host">
+          <div id="player"></div>
+          <div id="playbackInfo" class="playback-info"
+               style="background:white;color:#111">
+            <div class="song-title" id="songTitle">
+              No song selected
+            </div>
+            <input type="range" id="progress"
+                   class="progress" min="0" max="100"
+                   value="0" step="0.1"
+                   aria-label="Playback position">
+            <div class="time-row">
+              <span id="elapsed">0:00</span>
+              <span id="duration">0:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wheel" id="wheel">
+      <button class="menu-button" onclick="goHome()">
+        MENU
+      </button>
+      <button class="previous-button"
+              onclick="previousTrack()"
+              aria-label="Previous">⏮</button>
+      <button class="next-button"
+              onclick="nextTrack()"
+              aria-label="Next">⏭</button>
+      <button class="center-button"
+              onclick="selectCurrent()"
+              aria-label="Select"></button>
+      <button class="play-button"
+              onclick="togglePlayback()"
+              aria-label="Play or pause">▶Ⅱ</button>
+    </div>
+  </div>
+
+  <div class="brand">iClone Music</div>
+</main>
+
+<script>
+function readStorage(key, fallback) {
+  try {
+    return JSON.parse(localStorage.getItem(key)) ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function writeStorage(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {}
+}
+
+let library = readStorage("iclone-library", []);
+let settings = readStorage("iclone-settings", {
+  name: "iClone Music",
+  color: "#c8c8cc",
+  wheel: "#fafafa",
+  shuffle: false,
+  repeat: false
+});
+
+let currentView = "home";
+let selectedIndex = 0;
+let menuActions = [];
+let currentItem = null;
+let player = null;
+let playerReady = false;
+let pendingItem = null;
+let isPlaying = false;
+let isSeeking = false;
+let hasPlayback = false;
+
+const content = document.getElementById("content");
+const playerHost = document.getElementById("playerHost");
+const progress = document.getElementById("progress");
+
+function saveLibrary() {
+  writeStorage("iclone-library", library);
+}
+
+function saveSettings() {
+  writeStorage("iclone-settings", settings);
+}
+
+function applyTheme() {
+  document.documentElement.style.setProperty(
+    "--body-color", settings.color
+  );
+  document.documentElement.style.setProperty(
+    "--wheel-color", settings.wheel
+  );
+  document.title = settings.name;
+}
+
+function setTitle(title) {
+  document.getElementById("headerTitle").textContent = title;
+}
+
+function showMenu(title, items, view) {
+  currentView = view;
+  selectedIndex = 0;
+  menuActions = items.map(item => item.action);
+  setTitle(title);
+
+  // Keep the official YouTube player visible during playback.
+  // Pause playback when leaving Now Playing.
+  if (playerReady && isPlaying) {
+    player.pauseVideo();
+  }
+
+  playerHost.classList.remove("visible");
+  content.style.display = "block";
+  content.replaceChildren();
+
+  items.forEach((item, index) => {
+    const row = document.createElement("button");
+    row.className = "menu-row";
+    if (index === 0) row.classList.add("active");
+
+    const label = document.createElement("span");
+    label.textContent = item.label;
+
+    const arrow = document.createElement("span");
+    arrow.textContent = "›";
+
+    row.append(label, arrow);
+
+    row.onclick = () => {
+      selectedIndex = index;
+      item.action();
+    };
+
+    content.appendChild(row);
+  });
+}
+
+function moveSelection(direction) {
+  const rows = content.querySelectorAll(".menu-row");
+  if (!rows.length) return;
+
+  selectedIndex =
+    (selectedIndex + direction + rows.length) % rows.length;
+
+  rows.forEach((row, index) => {
+    row.classList.toggle("active", index === selectedIndex);
+  });
+
+  rows[selectedIndex].scrollIntoView({
+    block: "nearest"
+  });
+}
+
+function selectCurrent() {
+  if (currentView === "now") {
+    togglePlayback();
+    return;
+  }
+
+  menuActions[selectedIndex]?.();
+}
+
+function goHome() {
+  showMenu(settings.name, [
+    { label: "Now Playing", action: showNowPlaying },
+    { label: "Music", action: showMusic },
+    { label: "Playlists", action: showPlaylists },
+    { label: "Add Music", action: showAddMusic },
+    { label: "Shuffle Songs", action: shuffleMusic },
+    { label: "Settings", action: showSettings }
+  ], "home");
+}
+
+function showMusic() {
+  showMenu("Music", [
+    { label: "All Songs", action: showSongs },
+    { label: "Playlists", action: showPlaylists },
+    { label: "Add Music", action: showAddMusic }
+  ], "music");
+}
+
+function showSongs() {
+  const songs = library.filter(item => item.type === "video");
+
+  showMenu("All Songs", [
+    ...songs.map(item => ({
+      label: item.name,
+      action: () => openItem(item)
+    })),
+    { label: "+ Add Song", action: showAddMusic }
+  ], "songs");
+}
+
+function showPlaylists() {
+  const playlists = library.filter(
+    item => item.type === "playlist"
+  );
+
+  showMenu("Playlists", [
+    ...playlists.map(item => ({
+      label: item.name,
+      action: () => playlistDetails(item)
+    })),
+    { label: "+ Add Playlist", action: showAddMusic }
+  ], "playlists");
+}
+
+function playlistDetails(item) {
+  showMenu(item.name, [
+    {
+      label: "Play Playlist",
+      action: () => openItem(item)
+    },
+    {
+      label: "Shuffle Playlist",
+      action: () => {
+        settings.shuffle = true;
+        saveSettings();
+        openItem(item);
+      }
+    },
+    {
+      label: "Rename",
+      action: () => renameItem(item)
+    },
+    {
+      label: "Delete Playlist",
+      action: () => deleteItem(item)
+    }
+  ], "playlistDetails");
+}
+
+function renameItem(item) {
+  const name = prompt("Enter a new name:", item.name);
+  if (name && name.trim()) {
+    item.name = name.trim();
+    saveLibrary();
+  }
+  showPlaylists();
+}
+
+function deleteItem(item) {
+  if (!confirm("Delete " + item.name + "?")) return;
+  library = library.filter(entry => entry.uid !== item.uid);
+  saveLibrary();
+  showPlaylists();
+}
+
+function parseYouTubeLink(value) {
+  try {
+    const url = new URL(value.trim());
+    const host = url.hostname.toLowerCase();
+
+    const allowed = [
+      "youtube.com",
+      "www.youtube.com",
+      "m.youtube.com",
+      "music.youtube.com",
+      "youtu.be"
+    ];
+
+    if (!allowed.includes(host)) return null;
+
+    const playlist = url.searchParams.get("list");
+
+    if (playlist && /^[a-zA-Z0-9_-]+$/.test(playlist)) {
+      return {
+        type: "playlist",
+        id: playlist
+      };
+    }
+
+    let video = url.searchParams.get("v");
+
+    if (host === "youtu.be") {
+      video = url.pathname.split("/")[1];
+    }
+
+    if (
+      url.pathname.startsWith("/shorts/") ||
+      url.pathname.startsWith("/embed/")
+    ) {
+      video = url.pathname.split("/")[2];
+    }
+
+    if (video && /^[a-zA-Z0-9_-]{11}$/.test(video)) {
+      return {
+        type: "video",
+        id: video
+      };
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function showAddMusic() {
+  if (playerReady) player.pauseVideo();
+
+  currentView = "add";
+  menuActions = [];
+  playerHost.classList.remove("visible");
+  content.style.display = "block";
+  setTitle("Add Music");
+
+  content.innerHTML = `
+    <div class="panel">
+      <h3>Import Music</h3>
+
+      <input id="musicName"
+             placeholder="Song or playlist name">
+
+      <input id="musicLink"
+             type="url"
+             placeholder="Paste YouTube link">
+
+      <button class="primary" onclick="importMusic(false)">
+        Save to Library
+      </button>
+
+      <button class="secondary" onclick="importMusic(true)">
+        Save & Play
+      </button>
+
+      <div class="hint">
+        Paste a public YouTube playlist or individual
+        video link. Your music library is saved
+        automatically on this device.
+      </div>
+    </div>
+  `;
+}
+
+function importMusic(playImmediately) {
+  const link = document.getElementById("musicLink").value;
+  const name = document.getElementById("musicName").value.trim();
+  const parsed = parseYouTubeLink(link);
+
+  if (!parsed) {
+    alert("Please enter a valid YouTube video or playlist link.");
+    return;
+  }
+
+  const existing = library.find(item =>
+    item.id === parsed.id && item.type === parsed.type
+  );
+
+  const item = existing || {
+    ...parsed,
+    uid: Date.now().toString(36) +
+         Math.random().toString(36).slice(2),
+    name: name || (
+      parsed.type === "playlist"
+        ? "Playlist " + (library.length + 1)
+        : "Song " + (library.length + 1)
+    )
+  };
+
+  if (!existing) {
+    library.push(item);
+    saveLibrary();
+  }
+
+  if (playImmediately) {
+    openItem(item);
+  } else if (item.type === "playlist") {
+    showPlaylists();
+  } else {
+    showSongs();
+  }
+}
+
+function showNowPlaying() {
+  currentView = "now";
+  menuActions = [];
+  setTitle("Now Playing");
+
+  if (!currentItem) {
+    content.style.display = "block";
+    playerHost.classList.remove("visible");
+
+    content.innerHTML = `
+      <div class="panel">
+        <h3>No music selected</h3>
+        <p class="hint">
+          Add a YouTube playlist or song to get started.
+        </p>
+        <button class="primary" onclick="showAddMusic()">
+          Add Music
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  content.style.display = "none";
+  playerHost.classList.add("visible");
+
+  document.getElementById("songTitle").textContent =
+    currentItem.name;
+}
+
+function openItem(item) {
+  currentItem = item;
+  hasPlayback = false;
+  showNowPlaying();
+
+  if (!playerReady) {
+    pendingItem = item;
+    document.getElementById("songTitle").textContent =
+      "Loading player...";
+    return;
+  }
+
+  loadItem(item);
+}
+
+function loadItem(item) {
+  if (!playerReady) return;
+
+  if (item.type === "playlist") {
+    player.loadPlaylist({
+      list: item.id,
+      listType: "playlist",
+      index: 0,
+      startSeconds: 0
+    });
+  } else {
+    player.loadVideoById(item.id);
+  }
+
+  hasPlayback = true;
+}
+
+function togglePlayback() {
+  if (!currentItem) {
+    showAddMusic();
+    return;
+  }
+
+  showNowPlaying();
+
+  if (!playerReady) {
+    pendingItem = currentItem;
+    return;
+  }
+
+  if (!hasPlayback) {
+    loadItem(currentItem);
+    return;
+  }
+
+  if (player.getPlayerState() === 1) {
+    player.pauseVideo();
+  } else {
+    player.playVideo();
+  }
+}
+
+function nextTrack() {
+  if (currentView !== "now") {
+    moveSelection(1);
+    return;
+  }
+
+  if (!playerReady || !currentItem) return;
+
+  if (currentItem.type === "playlist") {
+    player.nextVideo();
+  } else {
+    advanceLibrary(1);
+  }
+}
+
+function previousTrack() {
+  if (currentView !== "now") {
+    moveSelection(-1);
+    return;
+  }
+
+  if (!playerReady || !currentItem) return;
+
+  if (player.getCurrentTime() > 3) {
+    player.seekTo(0, true);
+    return;
+  }
+
+  if (currentItem.type === "playlist") {
+    player.previousVideo();
+  } else {
+    advanceLibrary(-1);
+  }
+}
+
+function advanceLibrary(direction, automatic = false) {
+  const songs = library.filter(item => item.type === "video");
+  if (!songs.length) return;
+
+  let index = songs.findIndex(
+    item => item.uid === currentItem?.uid
+  );
+
+  if (settings.shuffle && songs.length > 1) {
+    const choices = songs.filter(
+      item => item.uid !== currentItem?.uid
+    );
+
+    openItem(
+      choices[Math.floor(Math.random() * choices.length)]
+    );
+    return;
+  }
+
+  let next = index + direction;
+
+  if (automatic && next >= songs.length && !settings.repeat) {
+    return;
+  }
+
+  next = (next + songs.length) % songs.length;
+  openItem(songs[next]);
+}
+
+function shuffleMusic() {
+  if (!library.length) {
+    showAddMusic();
+    return;
+  }
+
+  settings.shuffle = true;
+  saveSettings();
+
+  const songs = library.filter(item => item.type === "video");
+  const choices = songs.length ? songs : library;
+
+  openItem(
+    choices[Math.floor(Math.random() * choices.length)]
+  );
+}
+
+function showSettings() {
+  showMenu("Settings", [
+    {
+      label: "Shuffle: " + (settings.shuffle ? "On" : "Off"),
+      action: () => {
+        settings.shuffle = !settings.shuffle;
+        saveSettings();
+        showSettings();
+      }
+    },
+    {
+      label: "Repeat: " + (settings.repeat ? "On" : "Off"),
+      action: () => {
+        settings.repeat = !settings.repeat;
+        saveSettings();
+        showSettings();
+      }
+    },
+    {
+      label: "iPod Color",
+      action: showColors
+    },
+    {
+      label: "iPod Name",
+      action: () => {
+        const name = prompt("iPod name:", settings.name);
+        if (name && name.trim()) {
+          settings.name = name.trim();
+          saveSettings();
+          applyTheme();
+        }
+        showSettings();
+      }
+    },
+    {
+      label: "Full Screen",
+      action: async () => {
+        try {
+          if (document.fullscreenElement) {
+            await document.exitFullscreen();
+          } else if (document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen();
+          } else {
+            alert("Use Add to Home Screen for an app-like view.");
+          }
+        } catch {
+          alert("Full screen is unavailable in this browser.");
+        }
+      }
+    },
+    {
+      label: "About",
+      action: showAbout
+    }
+  ], "settings");
+}
+
+const colors = [
+  ["Silver", "#c8c8cc"],
+  ["Black", "#343434"],
+  ["White", "#f5f5f5"],
+  ["Pink", "#f5a6c8"],
+  ["Hot Pink", "#ed509e"],
+  ["Red", "#db4141"],
+  ["Orange", "#f3a34c"],
+  ["Yellow", "#f3d759"],
+  ["Green", "#92c968"],
+  ["Mint", "#a8dfca"],
+  ["Blue", "#63b5e7"],
+  ["Navy", "#334a80"],
+  ["Purple", "#aa8bd9"],
+  ["Lavender", "#d3b9ef"],
+  ["Gold", "#d8c28d"],
+  ["Rose Gold", "#d8a5a2"],
+  ["Cream", "#e8dfcd"],
+  ["Graphite", "#73777e"]
+];
+
+function showColors() {
+  currentView = "colors";
+  menuActions = [];
+  setTitle("iPod Color");
+  content.replaceChildren();
+
+  const panel = document.createElement("div");
+  panel.className = "panel";
+
+  const grid = document.createElement("div");
+  grid.className = "color-grid";
+
+  colors.forEach(([name, color]) => {
+    const button = document.createElement("button");
+    button.className = "swatch";
+    button.style.background = color;
+    button.title = name;
+    button.setAttribute("aria-label", name);
+
+    button.onclick = () => {
+      settings.color = color;
+      settings.wheel =
+        name === "Black" || name === "Graphite"
+          ? "#e3e3e3"
+          : "#fafafa";
+
+      saveSettings();
+      applyTheme();
+    };
+
+    grid.appendChild(button);
+  });
+
+  panel.appendChild(grid);
+  content.appendChild(panel);
+}
+
+function showAbout() {
+  currentView = "about";
+  menuActions = [];
+  setTitle("About");
+
+  content.innerHTML = `
+    <div class="panel">
+      <h3>iClone Music</h3>
+      <p>Web Edition 1.0</p>
+      <p class="hint">
+        A retro music player powered by YouTube.
+        Playlists and preferences are stored locally.
+        No account or subscription is required by iClone.
+      </p>
+      <p class="hint">
+        YouTube may display ads or restrict playback
+        for certain videos.
+      </p>
+    </div>
+  `;
+}
+
+// Official YouTube IFrame Player API
+
+window.onYouTubeIframeAPIReady = function() {
+  player = new YT.Player("player", {
+    width: "100%",
+    height: "200",
+    playerVars: {
+      playsinline: 1,
+      controls: 1,
+      rel: 0,
+      origin: window.location.origin
+    },
+    events: {
+      onReady: function() {
+        playerReady = true;
+
+        if (pendingItem && currentView === "now") {
+          const item = pendingItem;
+          pendingItem = null;
+          loadItem(item);
+        }
+      },
+
+      onStateChange: function(event) {
+        isPlaying = event.data === YT.PlayerState.PLAYING;
+
+        document.getElementById("playIcon").textContent =
+          isPlaying ? "▶" : "";
+
+        if (isPlaying && currentView !== "now") {
+          player.pauseVideo();
+          return;
+        }
+
+        if (isPlaying) {
+          updateSongTitle();
+
+          if (currentItem?.type === "playlist") {
+            player.setShuffle(settings.shuffle);
+            player.setLoop(settings.repeat);
+          }
+        }
+
+        if (event.data === YT.PlayerState.ENDED) {
+          if (currentItem?.type === "video") {
+            advanceLibrary(1, true);
+          }
+        }
+      },
+
+      onError: function(event) {
+        const messages = {
+          2: "Invalid video or playlist.",
+          5: "This video cannot play in your browser.",
+          100: "This video is private or unavailable.",
+          101: "The owner has disabled embedded playback.",
+          150: "The owner has disabled embedded playback.",
+          153: "YouTube could not identify the website."
+        };
+
+        document.getElementById("songTitle").textContent =
+          messages[event.data] || "Playback unavailable.";
+      }
+    }
+  });
+};
+
+function updateSongTitle() {
+  if (!playerReady || !currentItem) return;
+
+  try {
+    const data = player.getVideoData();
+    const title = data?.title || currentItem.name;
+
+    document.getElementById("songTitle").textContent = title;
+  } catch {}
+}
+
+function formatTime(seconds) {
+  seconds = Math.max(0, Math.floor(seconds || 0));
+
+  return Math.floor(seconds / 60) + ":" +
+    String(seconds % 60).padStart(2, "0");
+}
+
+setInterval(() => {
+  if (!playerReady || !hasPlayback) return;
+
+  try {
+    const time = player.getCurrentTime();
+    const duration = player.getDuration();
+
+    if (!isSeeking && duration > 0) {
+      progress.value = time / duration * 100;
+    }
+
+    document.getElementById("elapsed").textContent =
+      formatTime(time);
+
+    document.getElementById("duration").textContent =
+      formatTime(duration);
+
+    if (isPlaying) updateSongTitle();
+  } catch {}
+}, 500);
+
+progress.addEventListener("pointerdown", () => {
+  isSeeking = true;
+});
+
+progress.addEventListener("change", () => {
+  if (playerReady) {
+    const duration = player.getDuration();
+
+    if (duration > 0) {
+      player.seekTo(
+        Number(progress.value) / 100 * duration,
+        true
+      );
+    }
+  }
+
+  isSeeking = false;
+});
+
+progress.addEventListener("pointercancel", () => {
+  isSeeking = false;
+});
+
+// Rotating click-wheel navigation
+
+const wheel = document.getElementById("wheel");
+let dragging = false;
+let lastAngle = 0;
+let rotation = 0;
+
+function getAngle(event) {
+  const rect = wheel.getBoundingClientRect();
+
+  return Math.atan2(
+    event.clientY - rect.top - rect.height / 2,
+    event.clientX - rect.left - rect.width / 2
+  ) * 180 / Math.PI;
+}
+
+wheel.addEventListener("pointerdown", event => {
+  if (event.target.closest("button")) return;
+
+  dragging = true;
+  lastAngle = getAngle(event);
+  rotation = 0;
+
+  wheel.setPointerCapture(event.pointerId);
+});
+
+wheel.addEventListener("pointermove", event => {
+  if (!dragging) return;
+
+  const angle = getAngle(event);
+  let delta = angle - lastAngle;
+
+  if (delta > 180) delta -= 360;
+  if (delta < -180) delta += 360;
+
+  rotation += delta;
+  lastAngle = angle;
+
+  if (Math.abs(rotation) >= 22) {
+    const direction = rotation > 0 ? 1 : -1;
+
+    if (currentView === "now" && playerReady) {
+      const duration = player.getDuration();
+
+      if (duration > 0) {
+        const time = player.getCurrentTime();
+
+        player.seekTo(
+          Math.max(
+            0,
+            Math.min(duration, time + direction * 5)
+          ),
+          true
+        );
+      }
+    } else {
+      moveSelection(direction);
+    }
+
+    rotation = 0;
+  }
+});
+
+wheel.addEventListener("pointerup", () => {
+  dragging = false;
+});
+
+wheel.addEventListener("pointercancel", () => {
+  dragging = false;
+});
+
+// Desktop keyboard controls
+
+document.addEventListener("keydown", event => {
+  if (["INPUT", "TEXTAREA"].includes(
+    document.activeElement?.tagName
+  )) return;
+
+  if (event.key === "ArrowDown") {
+    event.preventDefault();
+    moveSelection(1);
+  }
+
+  if (event.key === "ArrowUp") {
+    event.preventDefault();
+    moveSelection(-1);
+  }
+
+  if (event.key === "Enter") selectCurrent();
+  if (event.key === "Escape") goHome();
+
+  if (event.code === "Space") {
+    event.preventDefault();
+    togglePlayback();
+  }
+});
+
+applyTheme();
+goHome();
+
+const api = document.createElement("script");
+api.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(api);
+</script>
+
+</body>
+</html>
